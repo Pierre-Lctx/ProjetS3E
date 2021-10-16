@@ -4,7 +4,8 @@
 //Déclaration des variables du programme
 
 int greenButtonPort = 3;
-int redButtonPort = 2;
+int redButtonPort = 4;
+
 
 /*
 
@@ -20,33 +21,21 @@ int redButtonPort = 2;
 
 */
 int mode = 0;
-int lastMode;
+int lastMode = 0;
 
 unsigned long currentMillis;
 unsigned long previousMillis = 0;
 
-#define NUM_LED 5
+ChainableLED leds(7 ,8, 1);
 
-ChainableLED leds(4 ,5, NUM_LED);
-
-void setup()
+void initialisation()
 {
-
-    init();
-
+    Serial.begin(9600);
+    pinMode(redButtonPort, INPUT);
+    pinMode(greenButtonPort, INPUT);
+    initInterrupt();
 }
 
-void loop()
-{
-
-    getData();
-
-}
-
-void getData()
-{
-
-}
 
 void initInterrupt()
 {
@@ -56,245 +45,171 @@ void initInterrupt()
 
 void interruptionRed()
 {
-
     if (digitalRead(redButtonPort))
     {
         currentMillis = millis();
 
         if ((unsigned long)(currentMillis - previousMillis) >= 5000)
         {
-
-            changeLEDMode(mode);
-
+            selectionMode(digitalRead(redButtonPort), 0);
             previousMillis = currentMillis;
-
         }
-        
     }
-
 }
 
 void interruptionGreen()
 {
-
     if (digitalRead(greenButtonPort))
     {
         currentMillis = millis();
 
         if ((unsigned long)(currentMillis - previousMillis) >= 5000)
         {
-
-            changeLEDMode(mode);
-
+            selectionMode(0, digitalRead(greenButtonPort));
             previousMillis = currentMillis;
-
         }
-        
-    }
-
-}
-
-void actionMode(int modeNbr)
-{
-
-    switch (modeNbr)
-    {
-    case 1:
-        
-        break;
-
-    case 2:
-
-        break;
-
-    case 3:
-        
-        break;
-
-    case 4:
-
-        break;
-    
-    default:
-        break;
-    }
-
-}
-
-void checkStartingPressButton(bool stateButton)
-{
-    if (stateButton)
-    {
-
-        mode = 4;
-
-        changeLEDMode(mode);
-        actionMode(mode);
-
-    }
-    else 
-    {
-
-        mode = 1;
-
-        changeLEDMode(mode);
-        actionMode(mode);
-
     }
 }
 
-void checkMode(int modeNbr)
+void modeStandard()
 {
+    //Allumage de la LED verte
+    leds.setColorRGB(0, 0, 255, 0);
+}
 
-    if (modeNbr == 0)
+void modeMaintenance()
+{
+    //Allumage de la LED orange
+    leds.setColorRGB(0, 255, 75, 0);
+}
+
+void modeEconomique()
+{
+    //Allumage de la LED bleue
+    leds.setColorRGB(0, 0, 170, 255);
+}
+
+void modeConfiguration()
+{
+    //Allumage de la LED jaune
+    leds.setColorRGB(0, 255, 255, 0);
+}
+
+void selectionMode(bool redButtonValue, bool greenButtonValue)
+{
+    Serial.println("Selection en cours !");
+    Serial.print("Red button value : ");
+    Serial.println(redButtonValue);
+    Serial.print("Green Button Value : ");
+    Serial.println(greenButtonValue);
+    if (redButtonValue)
     {
-        if (digitalRead(redButtonPort))
+        //Si nous venons d'activer le dispositif et que nous appuyons sur le bouton rouge, nous passons en mode configuration
+        if (mode == 0)
         {
-            
-            changeLEDMode(4);
-
-            actionMode(4);
-
-            lastMode = modeNbr;
-
+            mode = 4;
+            modeConfiguration();
+            Serial.println("Mode configuration !");
         }
-        if (digitalRead(greenButtonPort))
+
+        //Si nous sommes en mode standard et que nous appuyons sur le bouton rouge, nous passons en mode maintenance
+        if (mode == 1)
         {
-
-            changeLEDMode(1);
-
-            actionMode(1);
-
-            lastMode = modeNbr;
-
+            mode = 2;
+            lastMode = 1;
+            modeMaintenance();
+            Serial.println("Mode maintenance !");
         }
-    }
 
-    else 
-    {
-
-        if (lastMode == 1)
+        //Si nous sommes en mode maintenance et que nous appuyons sur le bouton rouge
+        //Si le mode précédent était le mode économique, alors nous repassons en mode économique
+        //Si le mode précédent était le mode était le mode standard, alors nous repassons en mode standard
+        if (mode == 2)
         {
-            if (modeNbr == 2)
+            if (lastMode == 1)
             {
-                changeLEDMode(modeNbr);
+                mode = 1;
+                lastMode = 2;
+                modeStandard();
+                Serial.println("Mode standard !");
 
-                actionMode(modeNbr);
-
-                lastMode = modeNbr;
             }
-
-            if (modeNbr == 3)
+            if (lastMode == 3)
             {
-                changeLEDMode(modeNbr);
-
-                actionMode(modeNbr);
-
-                lastMode = modeNbr;
-            }
-            
-        }
-
-        if (lastMode == 2)
-        {
-            if (modeNbr == 1)
-            {
-
-                changeLEDMode(modeNbr);
-
-                actionMode(modeNbr);
-
-                lastMode = modeNbr;
-
+                mode = 3;
+                lastMode = 2;
+                modeEconomique();
+                Serial.println("Mode économique !");
             }
         }
 
-        if (lastMode == 3)
+        //Si nous sommes en mode économique et que le bouton rouge est pressé, nous passons en mode maintenance
+        if (mode == 3)
         {
+            mode = 2;
+            modeMaintenance();
+            Serial.println("Mode maintenance !");
+        }
+    }
 
-            if ()
-
+    if (greenButtonValue)
+    {
+        Serial.println("Green button pressed !");
+        //Si nous venons d'activer le dispositif et que nous appuyons sur le bouton vert, nous passons en mode standard
+        if (mode == 0)
+        {
+            mode = 1;
+            modeStandard();
+            Serial.println("Mode standard !");
         }
 
+        //Si nous sommes en mode standard et que le bouton vert est pressé, nous passons en mode économique
+        if (mode == 1)
+        {
+            mode = 3;
+            lastMode = 1;
+            modeEconomique();
+            Serial.println("Mode économique !");
+        }
+
+        //Si nous sommes en mode économique et que le bouton vert est pressé, nous passons en mode standard
+        if (mode == 3)
+        {
+            mode = 1;
+            lastMode = 3;
+            modeStandard();
+            Serial.println("Mode standard !");
+        }
     }
 
-}
-
-void changeLEDMode(int nbrMode)
-{
-    switch (nbrMode)
+    if (!redButtonValue && !greenButtonValue)
     {
-    case 1:
-        //Passage en mode standard
-        leds.setColorRGB(0, 100, 100, 50);
-        break;
-    
-    case 2 :
-        //Passage en mode maintenance
-        leds.setColorRGB(0, 255, 205, 0);
-        break;
-
-    case 3:
-        //Passage en mode économique
-        leds.setColorRGB(0, 0, 170, 255);
-        break;
-    
-    case 4 :
-        //Passage en mode configuration
-        leds.setColorRGB(0, 60, 100, 50);
-        break;
-    
-    default:
-        //On éteint la led
-        leds.setColorRGB(0, 0, 0, 0);
-        break;
+        leds.setColorRGB(0, 255, 255, 255);
     }
 }
 
-int modeStandard(int modeNum)
+void setup()
 {
-
-
-    return modeNum;
+    initialisation();
 }
 
-int modeMaintenance(int modeNum)
+void loop()
 {
 
-
-    return modeNum;
-}
-
-int modeEconomique(int modeNum)
-{
-
-
-    return modeNum;
-}
-
-int modeConfiguration(int modeNum)
-{
-
-
-    return modeNum;
-}
-
-void capteursOFF()
-{
-
-    //On desactive les capteurs
+    int stateGreenButton = digitalRead(greenButtonPort);
+    int stateRedButton = digitalRead(redButtonPort);
+/*
+    if (!stateRedButton)
+    {
+        Serial.println("Green button value : ");
+        Serial.print(stateGreenButton);
+        
+    }
     
-
+    if (!stateGreenButton)
+    {
+        Serial.println("Red button value : ");
+        Serial.print(stateRedButton);
+    }
+        */
 }
-
-void init()
-{
-
-    leds.init();
-
-    pinMode(buttonPort, INPUT);
-
-    initInterrupt();
-
-}
-

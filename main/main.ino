@@ -2,6 +2,9 @@
 #include <Arduino.h>
 #include <Wire.h>
 #include "DS1307.h"
+#include <SPI.h>
+#include <SD.h>
+#include "SparkFunBME280.h"
 
 //Déclaration des variables du programme
 
@@ -32,7 +35,7 @@ unsigned long previousMillis = 0;
 
 ChainableLED leds(7 ,8, 1);
 
-//DS1307 clock;
+DS1307 clock;
 
 void initialisation()
 {
@@ -49,6 +52,20 @@ void initialisation()
     clock.fillByHMS(18,11,00); // On initialise l'heure de départ
     clock.fillDayOfWeek(SUN); //On entre le nom du jour de départ
     clock.setTime(); //Ecriture de la date sur l'horloge RTC
+
+      //configuration du capteur
+    capteur.settings.commInterface = I2C_MODE; 
+    capteur.settings.I2CAddress = 0x76;
+    capteur.settings.runMode = 3; 
+    capteur.settings.tStandby = 0;
+    capteur.settings.filter = 0;
+    capteur.settings.tempOverSample = 1 ;
+    capteur.settings.pressOverSample = 1;
+    capteur.settings.humidOverSample = 1;
+
+    delay(10);
+    // chargement de la configuration du capteur
+    capteur.begin();
 
     initInterrupt();
 }

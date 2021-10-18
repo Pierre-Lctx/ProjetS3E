@@ -1,7 +1,7 @@
 #include <ChainableLED.h>
 #include <Arduino.h>
 #include <Wire.h>
-//#include "DS1307.h"
+#include "DS1307.h"
 
 //Déclaration des variables du programme
 
@@ -226,10 +226,10 @@ void getData()
     //Récupération de la luminosité
     //On récupère les données brutes du capteurs
 
-    int light = analogRead(A1); 
+    int light = analogRead(A0); 
     
     //On traite les données ici
-    //light = (light/10)^10;
+    light = (light/10)^10;
 
     Serial.println(light);
     //Serial.println(" lux.");

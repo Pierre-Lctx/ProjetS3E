@@ -21,6 +21,7 @@ const int greenButtonPort = 3;
     Il à 5 secondes pour choisir, une simple pression suffit au début.
 
 */
+
 int mode = 0;
 int lastMode = 0;
 
@@ -42,13 +43,13 @@ void initialisation()
     pinMode(A1, INPUT); //Initialisation du capteur de luminosité
 
     analogWrite(A1, LOW);
-/*
+
     clock.begin();
     clock.fillByYMD(2021, 10, 17); // On initialise le jour de départ de la clock
     clock.fillByHMS(18,11,00); // On initialise l'heure de départ
     clock.fillDayOfWeek(SUN); //On entre le nom du jour de départ
     clock.setTime(); //Ecriture de la date sur l'horloge RTC
-*/
+
     initInterrupt();
 }
 
@@ -232,7 +233,7 @@ void getData()
     light = (light/10)^10;
 
     Serial.println(light);
-    //Serial.println(" lux.");
+    Serial.println(" lux.");
 
 }
 

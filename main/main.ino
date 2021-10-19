@@ -28,10 +28,20 @@ const int greenButtonPort = 3;
 int mode = 0;
 int lastMode = 0;
 
+int valeurModification;
+
+int tailleFichier;
+
+long tempsAttente = 500;
+
 bool checkGetData = false;
+
+
 
 unsigned long currentMillis;
 unsigned long previousMillis = 0;
+
+BME280 capteur;
 
 ChainableLED leds(7 ,8, 1);
 
@@ -113,6 +123,8 @@ void modeStandard()
     leds.setColorRGB(0, 0, 255, 0);
 
     checkGetData = true;
+
+    tempsAttente = 600000;
 }
 
 void modeMaintenance()
@@ -129,6 +141,8 @@ void modeEconomique()
     leds.setColorRGB(0, 0, 170, 255);
 
     checkGetData = true;
+
+    tempsAttente *= 2;
 }
 
 void modeConfiguration()
@@ -137,6 +151,51 @@ void modeConfiguration()
     leds.setColorRGB(0, 255, 255, 0);
 
     checkGetData = false;
+
+    if (millis() >= 1800000)
+    {
+        mode = 1;
+        lastMode = 3;
+        modeStandard();
+    }
+}
+
+void modificationParametre()
+{
+    Serial.println("Interface de modification des paramètres : ");
+    Serial.println("1 - Temps d'intervalle entre deux mesure mode standard.");
+    Serial.println("2 - Changer la taille maximale d'un fichier.");
+    Serial.println("3 - Réinitialiser l'ensemble des paramètres en valeur par défaut.");
+    Serial.println("4 - Affichage de la version du programme.");
+    Serial.println("");
+    Serial.println("Veuillez choisir la modification à effectuer : ");
+
+    valeurModification = Serial.read();
+
+    while (valeurModification < 1 || valeurModification > 4)
+    {
+        Serial.println("Ce choix n'existe pas !");
+        valeurModification = Serial.read();
+    }
+
+    switch (valeurModification)
+    {
+        case 1 :
+            Serial.println("Veuillez mettre le nouveau temps entre deux mesures : ");
+            tempsAttente =  Serial.read();
+            break;
+        case 2 :
+            Serial.println("Veuillez mettre la nouvelle taille de fichier : ");
+            tailleFichier =  Serial.read();
+            break;
+        case 3 :
+            tempsAttente = 600000;
+            tailleFichier;
+            break;
+        case 4:
+            Serial.println("Version du programme : ");
+            break;
+    }
 }
 
 int selectionMode(bool redButtonValue, bool greenButtonValue)
@@ -249,9 +308,29 @@ void getData()
     //On traite les données ici
     light = (light/10)^10;
 
-    Serial.println(light);
+    Serial.print(light);
     Serial.println(" lux.");
 
+    //Récupération de la température de l'air en °C
+    int temperature = capteur.readTempC();
+
+    //Récupération de la pression atmosphérique en Pascals
+    int pression = capteur.readFloatPressure();
+
+    //Récupération de l'humidité en %
+    int humidite = capteur.readFloatHumidity();
+
+    Serial.print("Température : ");
+    Serial.print(temperature);
+    Serial.println("°C");
+    Serial.print("Pression : ");
+    Serial.print(pression);
+    Serial.println(" Pa");
+    Serial.print("Humidité : ");
+    Serial.print(humidite);
+    Serial.println(" %");
+
+    delay(tempsAttente);
 }
 
 void setup()

@@ -1,5 +1,5 @@
-#ifndef initialisation_h
-#define initialisation_h
+#ifndef initialisation
+#define initialisation
 
 void initialisation();
 

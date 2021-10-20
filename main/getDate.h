@@ -1,5 +1,5 @@
-#ifndef getData_h
-#define getData_h
+#ifndef getData
+#define getData
 
 void getData();
 

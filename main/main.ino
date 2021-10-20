@@ -30,7 +30,7 @@ int lastMode = 0;
 
 int valeurModification;
 
-int tailleFichier;
+int FILE_MAX_SIZE = 4096;
 
 long LOG_INTERVAL = 500;
 
@@ -185,11 +185,11 @@ void modificationParametre()
             break;
         case 2 :
             Serial.println("Veuillez mettre la nouvelle taille de fichier : ");
-            tailleFichier =  Serial.read();
+            FILE_MAX_SIZE =  Serial.read();
             break;
         case 3 :
             LOG_INTERVAL = 600000;
-            tailleFichier;
+            FILE_MAX_SIZE;
             break;
         case 4:
             Serial.println("Version du programme : ");

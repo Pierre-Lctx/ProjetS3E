@@ -8,32 +8,33 @@
 
 //Déclaration des variables du programme
 
-const int redButtonPort = 2;
-const int greenButtonPort = 3;
-
-int mode = 0;
-int lastMode = 0;
-
-int valeurModification;
-
-int FILE_MAX_SIZE = 4096;
-
-long LOG_INTERVAL = 500;
-
-bool checkGetData = false;
-
-unsigned long currentMillis;
-unsigned long previousMillis = 0;
-
-BME280 capteur;
-
-ChainableLED leds(7 ,8, 1);
-
-DS1307 clock;
 
 void initialisation()
 {
     Serial.begin(9600);
+
+    const int redButtonPort = 2;
+    const int greenButtonPort = 3;
+
+    int mode = 0;
+    int lastMode = 0;
+
+    int valeurModification;
+
+    int FILE_MAX_SIZE = 4096;
+
+    long LOG_INTERVAL = 500;
+
+    bool checkGetData = false;
+
+    unsigned long currentMillis;
+    unsigned long previousMillis = 0;
+
+    BME280 capteur;
+
+    ChainableLED leds(7 ,8, 1);
+
+    DS1307 clock;
 
     pinMode(redButtonPort, INPUT);
     pinMode(greenButtonPort, INPUT);
@@ -66,39 +67,17 @@ void initialisation()
     initInterrupt();
 }
 
-void initInterrupt()
-{
-    attachInterrupt(digitalPinToInterrupt(redButtonPort), interruptionRed, CHANGE);
-    attachInterrupt(digitalPinToInterrupt(greenButtonPort), interruptionGreen, CHANGE);
-}
+/*
 
-void interruptionRed()
-{
-    if (digitalRead(redButtonPort))
-    {
-        Serial.println("Red interruption !");
-        currentMillis = millis();
+    Fonctionnement de la variable mode :
+    - Mode standard : 1
+    - Mode maintenance : 2
+    - Mode économique : 3
+    - Mode configuration : 4
 
-        if ((unsigned long)(currentMillis - previousMillis) >= 5000)
-        {
-            selectionMode(digitalRead(redButtonPort), 0);
-            previousMillis = currentMillis;
-        }
-    }
-}
+    Par défaut, au début on initialise le mode à 0.
+    L'utilisateur doit appuyer pour se mettre en mode configuration, si il n'appuie pas il se met en mode standard.
+    Il à 5 secondes pour choisir, une simple pression suffit au début.
 
-void interruptionGreen()
-{
-    if (digitalRead(greenButtonPort))
-    {
-        Serial.println("Green interruption !");
-        currentMillis = millis();
-
-        if ((unsigned long)(currentMillis - previousMillis) >= 5000)
-        {
-            selectionMode(0, digitalRead(greenButtonPort));
-            previousMillis = currentMillis;
-        }
-    }
-}
+*/
 

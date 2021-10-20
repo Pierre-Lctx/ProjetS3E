@@ -9,31 +9,32 @@
 
 //Déclaration des variables du programme
 
-const int redButtonPort = 2;
-const int greenButtonPort = 3;
 
-int mode = 0;
-int lastMode = 0;
-
-int valeurModification;
-
-int FILE_MAX_SIZE = 4096;
-
-long LOG_INTERVAL = 500;
-
-bool checkGetData = false;
-
-unsigned long currentMillis;
-unsigned long previousMillis = 0;
-
-BME280 capteur;
-
-ChainableLED leds(7 ,8, 1);
-
-DS1307 clock;
 
 void initialisation()
 {
+	const int redButtonPort = 2;
+	const int greenButtonPort = 3;
+
+	int mode = 0;
+	int lastMode = 0;
+
+	int valeurModification;
+
+	int FILE_MAX_SIZE = 4096;
+
+	long LOG_INTERVAL = 500;
+
+	bool checkGetData = false;
+
+	unsigned long currentMillis;
+	unsigned long previousMillis = 0;
+
+	BME280 capteur;
+
+	ChainableLED leds(7 ,8, 1);
+
+	DS1307 clock;
     Serial.begin(9600);
 
     pinMode(redButtonPort, INPUT);

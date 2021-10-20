@@ -4,7 +4,7 @@
 #include "DS1307.h"
 #include <SPI.h>
 #include <SD.h>
-#include "SparkFunBME280.h"
+#include <SparkFunBME280.h>
 
 //Déclaration des variables du programme
 
@@ -56,8 +56,8 @@ void initialisation()
     analogWrite(A1, LOW);
 
     clock.begin();
-    clock.fillByYMD(2021, 10, 17); // On initialise le jour de départ de la clock
-    clock.fillByHMS(18,11,00); // On initialise l'heure de départ
+    clock.fillByYMD(2021, 10, 22); // On initialise le jour de départ de la clock
+    clock.fillByHMS(14,31,00); // On initialise l'heure de départ
     clock.fillDayOfWeek(SUN); //On entre le nom du jour de départ
     clock.setTime(); //Ecriture de la date sur l'horloge RTC
 
@@ -299,16 +299,33 @@ int selectionMode(bool redButtonValue, bool greenButtonValue)
 
 void getData()
 {   
+    String dateString;
+
+    clock.getTime();
+    dateString += String(clock.dayOfMonth, DEC);
+    dateString += "/";
+    dateString += String(clock.month, DEC);
+    dateString += "/";
+    dateString += String(clock.year + 2000, DEC);
+    dateString += " ";
+    dateString += String(clock.hour, DEC);
+    dateString += ":";
+    dateString += String(clock.minute, DEC);
+    dateString += ":";
+    dateString += String(clock.year + 2000, DEC);
+    dateString += " -> ";
+
+    Serial.print(dateString);
+
     //Récupération de la luminosité
     //On récupère les données brutes du capteurs
 
-    int luminosite = analogRead(A0); 
-    
+    int luminosite = analogRead(A0);
     //On traite les données ici
     luminosite =  (luminosite/10)^10;
 
     Serial.print(luminosite);
-    Serial.println(" lux.");
+    Serial.print(" lux | ");
 
     //Récupération de la température de l'air en °C
     float temperature = capteur.readTempC();
@@ -321,29 +338,15 @@ void getData()
 
     Serial.print("Température : ");
     Serial.print(temperature);
-    Serial.println("°C");
+    Serial.print("°C | ");
     Serial.print("Pression : ");
     Serial.print(pression);
-    Serial.println(" Pa");
+    Serial.print(" Pa | ");
     Serial.print("Humidité : ");
     Serial.print(humidite);
-    Serial.println(" %");
+    Serial.println(" %.");
 
     delay(LOG_INTERVAL);
-}
-
-char getDate()
-{
-    int heure = clock.hour;
-    int minute = clock.minute;
-    int seconde = clock.second;
-
-    int jour = clock.DayOfMonth;
-    int mois = clock.month;
-    int annee = clock.year + 2000;
-
-    char date[] = (char)jour + "/" + (char)mois + "/" + (char)annee + " | " + (char)heure + ":" + (char)minute + ":" + (char)seconde;
-    return date;
 }
 
 void setup()

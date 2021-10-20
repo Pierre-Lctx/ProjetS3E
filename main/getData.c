@@ -7,6 +7,7 @@
 #include <SparkFunBME280.h>
 #include "functions.c"
 #include "initialisation.c"
+#include "functions.h"
 
 //****************************************************************
 //* Nom        :  getData               DATE : 20/10/2021        *  

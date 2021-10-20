@@ -7,6 +7,8 @@
 #include <SparkFunBME280.h>
 #include "functions.c"
 #include "initialisation.c"
+#include "getData.c"
+#include "functions.h"
 
 
 

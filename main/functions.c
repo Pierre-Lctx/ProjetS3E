@@ -6,7 +6,7 @@
 #include <SD.h>
 #include <SparkFunBME280.h>
 #include "initialisation.c"
-
+#include "functions.h"
 //****************************************************************
 //* Nom        :  initInterrupt         DATE : 20/10/2021        *  
 //* Paramètres :  Aucun                                          *

@@ -8,6 +8,12 @@
 
 //Déclaration des variables du programme
 
+//****************************************************************
+//* Nom        :  initialisation        DATE : 20/10/2021        *  
+//* Paramètres :  Aucun                                          *
+//* Fonction   :  Initialisation de notre Arduino                *
+//* Retour     :  Aucun                                          *   
+//****************************************************************
 
 void initialisation()
 {
@@ -67,17 +73,5 @@ void initialisation()
     initInterrupt();
 }
 
-/*
 
-    Fonctionnement de la variable mode :
-    - Mode standard : 1
-    - Mode maintenance : 2
-    - Mode économique : 3
-    - Mode configuration : 4
-
-    Par défaut, au début on initialise le mode à 0.
-    L'utilisateur doit appuyer pour se mettre en mode configuration, si il n'appuie pas il se met en mode standard.
-    Il à 5 secondes pour choisir, une simple pression suffit au début.
-
-*/
 

@@ -8,6 +8,13 @@
 #include "functions.c"
 #include "initialisation.c"
 
+//****************************************************************
+//* Nom        :  getData               DATE : 20/10/2021        *  
+//* Paramètres :  Aucun                                          *
+//* Fonction   :  Récupération et traitement des données         *
+//* Retour     :  Aucun                                          *   
+//****************************************************************
+
 void getData()
 {   
     String dateString;

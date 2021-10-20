@@ -1,3 +1,17 @@
+/*
+
+    Fonctionnement de la variable mode :
+    - Mode standard.........:   1
+    - Mode maintenance......:   2
+    - Mode économique.......:   3
+    - Mode configuration....:   4
+
+    Par défaut, au début on initialise le mode à 0.
+    L'utilisateur doit appuyer pour se mettre en mode configuration, si il n'appuie pas il se met en mode standard.
+    Il à 5 secondes pour choisir, une simple pression suffit au début.
+
+*/
+
 #include <ChainableLED.h>
 #include <Arduino.h>
 #include <Wire.h>
@@ -8,21 +22,16 @@
 #include "functions.c"
 #include "initialisation.c"
 
-/*
 
-    Fonctionnement de la variable mode :
-    - Mode standard : 1
-    - Mode maintenance : 2
-    - Mode économique : 3
-    - Mode configuration : 4
 
-    Par défaut, au début on initialise le mode à 0.
-    L'utilisateur doit appuyer pour se mettre en mode configuration, si il n'appuie pas il se met en mode standard.
-    Il à 5 secondes pour choisir, une simple pression suffit au début.
+//****************************************************************
+//* Nom        :  modeStandard          DATE : 20/10/2021        *  
+//* Paramètres :  Aucun                                          *
+//* Fonction   :  Mise en marche du mode Standard                *
+//* Retour     :  Aucun                                          *   
+//****************************************************************
 
-*/
-
-void modeStandard()
+void modeStandard() 
 {
     //Allumage de la LED verte
     leds.setColorRGB(0, 0, 255, 0);
@@ -32,6 +41,13 @@ void modeStandard()
     LOG_INTERVAL = 600000;
 }
 
+//****************************************************************
+//* Nom        :  modeMaintenance       DATE : 20/10/2021        *  
+//* Paramètres :  Aucun                                          *
+//* Fonction   :  Mise en marche du mode Maintenance             *
+//* Retour     :  Aucun                                          *   
+//****************************************************************
+
 void modeMaintenance()
 {
     //Allumage de la LED orange
@@ -39,6 +55,13 @@ void modeMaintenance()
 
     checkGetData = false;
 }
+
+//****************************************************************
+//* Nom        :  modeEconomique        DATE : 20/10/2021        *  
+//* Paramètres :  Aucun                                          *
+//* Fonction   :  Mise en marche du mode Economique              *
+//* Retour     :  Aucun                                          *   
+//****************************************************************
 
 void modeEconomique()
 {
@@ -49,6 +72,13 @@ void modeEconomique()
 
     LOG_INTERVAL *= 2;
 }
+
+//****************************************************************
+//* Nom        :  modeConfiguration     DATE : 20/10/2021        *  
+//* Paramètres :  Aucun                                          *
+//* Fonction   :  Mise en marche du mode Configuration           *
+//* Retour     :  Aucun                                          *   
+//****************************************************************
 
 void modeConfiguration()
 {
@@ -64,6 +94,13 @@ void modeConfiguration()
         modeStandard();
     }
 }
+
+//****************************************************************
+//* Nom        :  modificationParametre DATE : 20/10/2021        *  
+//* Paramètres :  Aucun                                          *
+//* Fonction   :  Fonction de modification de paramètres         *
+//* Retour     :  Aucun                                          *   
+//****************************************************************
 
 void modificationParametre()
 {
@@ -103,6 +140,13 @@ void modificationParametre()
             break;
     }
 }
+
+//****************************************************************
+//* Nom        :  selectionMode         DATE : 20/10/2021        *  
+//* Paramètres :  Valeur des boutons rouge et vert               *
+//* Fonction   :  Fonction de selection de mode                  *
+//* Retour     :  0 pour s'assurer du changement de mode         *   
+//****************************************************************
 
 int selectionMode(bool redButtonValue, bool greenButtonValue)
 {

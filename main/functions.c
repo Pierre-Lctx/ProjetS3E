@@ -7,9 +7,12 @@
 #include <SparkFunBME280.h>
 #include "initialisation.c"
 
-//Déclaration des variables du programme
-
-
+//****************************************************************
+//* Nom        :  initInterrupt         DATE : 20/10/2021        *  
+//* Paramètres :  Aucun                                          *
+//* Fonction   :  Initialisation de l'interruption               *
+//* Retour     :  Aucun                                          *   
+//****************************************************************
 
 void initInterrupt()
 {
@@ -39,6 +42,14 @@ void initInterrupt()
     attachInterrupt(digitalPinToInterrupt(redButtonPort), interruptionRed, CHANGE);
     attachInterrupt(digitalPinToInterrupt(greenButtonPort), interruptionGreen, CHANGE);
 }
+
+//****************************************************************
+//* Nom        :  interruptionRed       DATE : 20/10/2021        *  
+//* Paramètres :  Aucun                                          *
+//* Fonction   :  Initialisation de l'interruption du bouton     *
+//* Rouge                                                        *
+//* Retour     :  Aucun                                          *   
+//****************************************************************
 
 void interruptionRed()
 {
@@ -77,6 +88,14 @@ void interruptionRed()
         }
     }
 }
+
+//****************************************************************
+//* Nom        :  interruptionGreen     DATE : 20/10/2021        *  
+//* Paramètres :  Aucun                                          *
+//* Fonction   :  Initialisation de l'interruption du bouton     *
+//* Vert                                                         *
+//* Retour     :  Aucun                                          *   
+//****************************************************************
 
 void interruptionGreen()
 {

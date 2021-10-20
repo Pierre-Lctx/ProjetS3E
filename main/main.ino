@@ -32,11 +32,9 @@ int valeurModification;
 
 int tailleFichier;
 
-long tempsAttente = 500;
+long LOG_INTERVAL = 500;
 
 bool checkGetData = false;
-
-
 
 unsigned long currentMillis;
 unsigned long previousMillis = 0;
@@ -124,7 +122,7 @@ void modeStandard()
 
     checkGetData = true;
 
-    tempsAttente = 600000;
+    LOG_INTERVAL = 600000;
 }
 
 void modeMaintenance()
@@ -142,7 +140,7 @@ void modeEconomique()
 
     checkGetData = true;
 
-    tempsAttente *= 2;
+    LOG_INTERVAL *= 2;
 }
 
 void modeConfiguration()
@@ -181,15 +179,16 @@ void modificationParametre()
     switch (valeurModification)
     {
         case 1 :
-            Serial.println("Veuillez mettre le nouveau temps entre deux mesures : ");
-            tempsAttente =  Serial.read();
+            Serial.println("Veuillez mettre le nouveau temps entre deux mesures (en minutes) : ");
+            LOG_INTERVAL =  Serial.read();
+            LOG_INTERVAL *= 60000;
             break;
         case 2 :
             Serial.println("Veuillez mettre la nouvelle taille de fichier : ");
             tailleFichier =  Serial.read();
             break;
         case 3 :
-            tempsAttente = 600000;
+            LOG_INTERVAL = 600000;
             tailleFichier;
             break;
         case 4:
@@ -303,22 +302,22 @@ void getData()
     //Récupération de la luminosité
     //On récupère les données brutes du capteurs
 
-    int light = analogRead(A0); 
+    int luminosite = analogRead(A0); 
     
     //On traite les données ici
-    light = (light/10)^10;
+    luminosite =  (luminosite/10)^10;
 
-    Serial.print(light);
+    Serial.print(luminosite);
     Serial.println(" lux.");
 
     //Récupération de la température de l'air en °C
-    int temperature = capteur.readTempC();
+    float temperature = capteur.readTempC();
 
     //Récupération de la pression atmosphérique en Pascals
-    int pression = capteur.readFloatPressure();
+    float pression = capteur.readFloatPressure();
 
     //Récupération de l'humidité en %
-    int humidite = capteur.readFloatHumidity();
+    float humidite = capteur.readFloatHumidity();
 
     Serial.print("Température : ");
     Serial.print(temperature);
@@ -330,7 +329,21 @@ void getData()
     Serial.print(humidite);
     Serial.println(" %");
 
-    delay(tempsAttente);
+    delay(LOG_INTERVAL);
+}
+
+char getDate()
+{
+    int heure = clock.hour;
+    int minute = clock.minute;
+    int seconde = clock.second;
+
+    int jour = clock.DayOfMonth;
+    int mois = clock.month;
+    int annee = clock.year + 2000;
+
+    char date[] = (char)jour + "/" + (char)mois + "/" + (char)annee + " | " + (char)heure + ":" + (char)minute + ":" + (char)seconde;
+    return date;
 }
 
 void setup()

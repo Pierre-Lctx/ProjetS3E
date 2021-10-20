@@ -5,6 +5,7 @@
 #include <SPI.h>
 #include <SD.h>
 #include <SparkFunBME280.h>
+#include "functions.c"
 
 //Déclaration des variables du programme
 

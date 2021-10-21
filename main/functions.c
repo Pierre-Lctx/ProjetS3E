@@ -16,9 +16,8 @@
 //* Retour     :  Aucun                                          *   
 //****************************************************************
 
-void initInterrupt()
-{
-    const int redButtonPort = 2;
+
+const int redButtonPort = 2;
     const int greenButtonPort = 3;
 
     int mode = 0;
@@ -41,6 +40,9 @@ void initInterrupt()
 
     DS1307 clock;
 
+
+void initInterrupt()
+{
     attachInterrupt(digitalPinToInterrupt(redButtonPort), interruptionRed, CHANGE);
     attachInterrupt(digitalPinToInterrupt(greenButtonPort), interruptionGreen, CHANGE);
 }
@@ -55,29 +57,6 @@ void initInterrupt()
 
 void interruptionRed()
 {
-    const int redButtonPort = 2;
-    const int greenButtonPort = 3;
-
-    int mode = 0;
-    int lastMode = 0;
-
-    int valeurModification;
-
-    int FILE_MAX_SIZE = 4096;
-
-    long LOG_INTERVAL = 500;
-
-    bool checkGetData = false;
-
-    unsigned long currentMillis;
-    unsigned long previousMillis = 0;
-
-    BME280 capteur;
-
-    ChainableLED leds(7 ,8, 1);
-
-    DS1307 clock;
-
     if (digitalRead(redButtonPort))
     {
         Serial.println("Red interruption !");
@@ -101,30 +80,6 @@ void interruptionRed()
 
 void interruptionGreen()
 {
-
-    const int redButtonPort = 2;
-    const int greenButtonPort = 3;
-
-    int mode = 0;
-    int lastMode = 0;
-
-    int valeurModification;
-
-    int FILE_MAX_SIZE = 4096;
-
-    long LOG_INTERVAL = 500;
-
-    bool checkGetData = false;
-
-    unsigned long currentMillis;
-    unsigned long previousMillis = 0;
-
-    BME280 capteur;
-
-    ChainableLED leds(7 ,8, 1);
-
-    DS1307 clock;
-
     if (digitalRead(greenButtonPort))
     {
         Serial.println("Green interruption !");

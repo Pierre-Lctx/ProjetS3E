@@ -47,7 +47,7 @@ File myFile; //Nommez l'instance du fichier ouvert "myFile".
 
 
 
-void datawrite(){
+void datawrite(String data){
 	// Ouvrez le fichier. Notez qu'un seul fichier peut être ouvert à la fois,
   // donc vous devez fermer celui-ci avant d'en ouvrir un autre.
   myFile = SD.open("data.txt", FILE_WRITE);
@@ -55,7 +55,7 @@ void datawrite(){
   // si le fichier s'est ouvert sans problème, écrire dans ce fichier :
   if (myFile) {
     Serial.print("Ecriture dans texte.txt...");
-    myFile.println("dateString et dataString");
+    myFile.println(data);
     // Fermeture du fichier
     myFile.close();
     Serial.println("Fini.");
@@ -79,7 +79,7 @@ void dataread(){
 
     // lire le fichier jusqu'à ce qu'il n'y ait rien d'autre dedans :
     while (myFile.available()) {
-      Serial.write(myFile.read());
+      Serial.println(myFile.read());
     }
     // Fermer le fichier:
     myFile.close();

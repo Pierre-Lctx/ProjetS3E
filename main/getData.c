@@ -20,6 +20,7 @@
 void getData()
 {   
     String dateString;
+    String dataString;
 
     clock.getTime();
     dateString += String(clock.dayOfMonth, DEC);
@@ -40,7 +41,7 @@ void getData()
     //Récupération de la luminosité
     //On récupère les données brutes du capteurs
 
-    int luminosite = analogRead(A0);
+    float luminosite = analogRead(A0);
     //On traite les données ici
     luminosite =  (luminosite/10)^10;
 
@@ -49,12 +50,21 @@ void getData()
 
     //Récupération de la température de l'air en °C
     float temperature = capteur.readTempC();
+    dataString += "Température : ";
+    dataString += String(temperature, DEC);
+    dataString += "°C | ";
 
     //Récupération de la pression atmosphérique en Pascals
     float pression = capteur.readFloatPressure();
+    dataString += "Pression : ";
+    dataString += String(pression, DEC);
+    dataString += " Pa | ";
 
     //Récupération de l'humidité en %
     float humidite = capteur.readFloatHumidity();
+    dataString += "Humidité : ";
+    dataString += String(temperature, DEC);
+    dataString += "° %.";
 
     Serial.print("Température : ");
     Serial.print(temperature);
@@ -65,6 +75,41 @@ void getData()
     Serial.print("Humidité : ");
     Serial.print(humidite);
     Serial.println(" %.");
+
+    carteSD = (SD.open("data.txt", FILE_WRITE));
+
+    if (carteSD)
+    {
+        if (light != NULL)
+        {
+            carteSD.print("Luminosité : ")
+            carteSD.print(light);
+            carteSD.print(" lux | ");
+        }
+
+        if (temperature != NULL)
+        {
+            carteSD.print("Température : ");
+            carteSD.print(temperature);
+            carteSD.print("°C | ");
+        }
+
+        if (pression != NULL)
+        {
+            carteSD.print("Pression : ");
+            carteSD.print(pression);
+            carteSD.print("Pa | ");
+        }
+
+        if (humidite != NULL)
+        {
+            carteSD.print("Humidité : ");
+            carteSD.print(humidite);
+            carteSD.print("%.");
+        }
+    }
+
+    dataWrite(dateString + dataString);
 
     delay(LOG_INTERVAL);
 }

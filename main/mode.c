@@ -86,6 +86,7 @@ void modeConfiguration()
     leds.setColorRGB(0, 255, 255, 0);
 
     checkGetData = false;
+    modificationParametre();
 
     if (millis() >= 1800000)
     {

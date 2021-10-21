@@ -31,6 +31,12 @@ DS1307 clock;
 
 File carteSD;
 
+//****************************************************************
+//* Nom        :  initialisation        DATE : 20/10/2021        *  
+//* Paramètres :  Aucun                                          *
+//* Fonction   :  Initialisation de notre Arduino                *
+//* Retour     :  Aucun                                          *   
+//****************************************************************
 
 void initialisation()
 {
@@ -80,6 +86,13 @@ void initialisation()
     initInterrupt();
 }
 
+//****************************************************************
+//* Nom        :  getData               DATE : 20/10/2021        *  
+//* Paramètres :  Aucun                                          *
+//* Fonction   :  Récupération et traitement des données         *
+//* Retour     :  Aucun                                          *   
+//****************************************************************
+
 void getData()
 {   
     String dateString;
@@ -108,36 +121,25 @@ void getData()
     //On traite les données ici
     luminosite =  (luminosite/10)^10;
 
- 
-
     //Récupération de la température de l'air en °C
     float temperature = capteur.readTempC();
-    dataString += "Température : ";
-    dataString += String(temperature, DEC);
-    dataString += "°C | ";
 
     //Récupération de la pression atmosphérique en Pascals
     float pression = capteur.readFloatPressure();
-    dataString += "Pression : ";
-    dataString += String(pression, DEC);
-    dataString += " Pa | ";
 
     //Récupération de l'humidité en %
     float humidite = capteur.readFloatHumidity();
-    dataString += "Humidité : ";
-    dataString += String(temperature, DEC);
-    dataString += "° %.";
-
-    Serial.println(F(dateString));
-
 
     carteSD = (SD.open("data.txt", FILE_WRITE));
 
     if (carteSD)
     {
         Serial.println(F("Enregistrement des données ! Fichier ouvert !"));
+
+        carteSD.print(dateString);
         if (luminosite != NULL)
         {
+            Serial.println(F("Ecriture de la luminosité !"));
             carteSD.print("Luminosité : ");
             carteSD.print(luminosite);
             carteSD.print(" lux | ");
@@ -145,6 +147,7 @@ void getData()
 
         if (temperature != NULL)
         {
+            Serial.println(F("Ecriture de la température !"));
             carteSD.print("Température : ");
             carteSD.print(temperature);
             carteSD.print("°C | ");
@@ -152,6 +155,7 @@ void getData()
 
         if (pression != NULL)
         {
+            Serial.println(F("Ecriture de la pression !"));
             carteSD.print("Pression : ");
             carteSD.print(pression);
             carteSD.print("Pa | ");
@@ -159,14 +163,35 @@ void getData()
 
         if (humidite != NULL)
         {
+            Serial.println(F("Ecriture de l'humidité !"));
             carteSD.print("Humidité : ");
             carteSD.print(humidite);
-            carteSD.print("%.");
+            carteSD.print("%.\n");
         }
-    }
 
-    delay(LOG_INTERVAL);
+        carteSD.close();
+    }
+    else 
+        Serial.println(F("Erreur !!! Aucune écriture possible sur la carte SD !"));
+
+    dateString += dataString;
+
+    Serial.println(dateString);
+
+    dateString = "";
+    dataString = "";
+
+
+    delay(1000);
 }
+
+//****************************************************************
+//* Nom        :  interruptionRed       DATE : 20/10/2021        *  
+//* Paramètres :  Aucun                                          *
+//* Fonction   :  Initialisation de l'interruption du bouton     *
+//* Rouge                                                        *
+//* Retour     :  Aucun                                          *   
+//****************************************************************
 
 void interruptionRed()
 {
@@ -206,12 +231,25 @@ void interruptionGreen()
     }
 }
 
+//****************************************************************
+//* Nom        :  initInterrupt         DATE : 20/10/2021        *  
+//* Paramètres :  Aucun                                          *
+//* Fonction   :  Initialisation de l'interruption               *
+//* Retour     :  Aucun                                          *   
+//****************************************************************
+
 void initInterrupt()
 {
     attachInterrupt(digitalPinToInterrupt(redButtonPort), interruptionRed, CHANGE);
     attachInterrupt(digitalPinToInterrupt(greenButtonPort), interruptionGreen, CHANGE);
 }
 
+//****************************************************************
+//* Nom        :  modeStandard          DATE : 20/10/2021        *  
+//* Paramètres :  Aucun                                          *
+//* Fonction   :  Mise en marche du mode Standard                *
+//* Retour     :  Aucun                                          *   
+//****************************************************************
 
 void modeStandard() 
 {
@@ -223,6 +261,13 @@ void modeStandard()
     LOG_INTERVAL = 600000;
 }
 
+//****************************************************************
+//* Nom        :  modeMaintenance       DATE : 20/10/2021        *  
+//* Paramètres :  Aucun                                          *
+//* Fonction   :  Mise en marche du mode Maintenance             *
+//* Retour     :  Aucun                                          *   
+//****************************************************************
+
 void modeMaintenance()
 {
     //Allumage de la LED orange
@@ -230,6 +275,14 @@ void modeMaintenance()
 
     checkGetData = false;
 }
+
+//****************************************************************
+//* Nom        :  modeEconomique        DATE : 20/10/2021        *  
+//* Paramètres :  Aucun                                          *
+//* Fonction   :  Mise en marche du mode Economique              *
+//* Retour     :  Aucun                                          *   
+//****************************************************************
+
 void modeEconomique()
 {
     //Allumage de la LED bleue
@@ -237,8 +290,16 @@ void modeEconomique()
 
     checkGetData = true;
 
-    LOG_INTERVAL *= 2;
+    LOG_INTERVAL = LOG_INTERVAL * 2;
 }
+
+//****************************************************************
+//* Nom        :  modeConfiguration     DATE : 20/10/2021        *  
+//* Paramètres :  Aucun                                          *
+//* Fonction   :  Mise en marche du mode Configuration           *
+//* Retour     :  Aucun                                          *   
+//****************************************************************
+
 void modeConfiguration()
 {
     //Allumage de la LED jaune
@@ -254,6 +315,14 @@ void modeConfiguration()
         modeStandard();
     }
 }
+
+//****************************************************************
+//* Nom        :  modificationParametre DATE : 20/10/2021        *
+//* Paramètres :  Aucun                                          *
+//* Fonction   :  Fonction de modification de paramètres         *
+//* Retour     :  Aucun                                          *
+//****************************************************************
+
 void modificationParametre()
 {
     Serial.println(F("Interface de modification des paramètres : "));
@@ -264,9 +333,14 @@ void modificationParametre()
     Serial.println(F(""));
     Serial.println(F("Veuillez choisir la modification à effectuer : "));
 
-    valeurModification = Serial.read();
+    bool checkDataInput = false;
 
-    while (valeurModification < 1 || valeurModification > 4)
+    while (checkDataInput == false)
+    {
+        valeurModification = Serial.read();
+    }
+
+    if (valeurModification < 1 || valeurModification > 4)
     {
         Serial.println(F("Ce choix n'existe pas !"));
         valeurModification = Serial.read();
@@ -411,6 +485,5 @@ void loop()
     while (checkGetData)
     {
         getData();
-        
     }
 }

@@ -23,5 +23,9 @@ void loop()
     while (checkGetData)
     {
         getData();
+        delay(1000);
+        datawrite();
+        delay(1000);
+        dataread();
     }
 }

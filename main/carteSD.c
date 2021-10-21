@@ -55,7 +55,7 @@ void datawrite(){
   // si le fichier s'est ouvert sans problème, écrire dans ce fichier :
   if (myFile) {
     Serial.print("Ecriture dans texte.txt...");
-    myFile.println("Test 1");
+    myFile.println("dateString et dataString");
     // Fermeture du fichier
     myFile.close();
     Serial.println("Fini.");

@@ -109,7 +109,5 @@ void getData()
         }
     }
 
-    dataWrite(dateString + dataString);
-
     delay(LOG_INTERVAL);
 }

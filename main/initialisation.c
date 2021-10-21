@@ -6,6 +6,9 @@
 #include <SD.h>
 #include <SparkFunBME280.h>
 #include "functions.h"
+#include "functions.c"
+#include "carteSD.c"
+#include "getData.c"
 
 //Déclaration des variables du programme
 

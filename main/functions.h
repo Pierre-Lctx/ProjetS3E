@@ -8,3 +8,7 @@ void getData();
 
 //Déclaration de la fonction d'initialisation de l'Arduino
 void initialisation();
+
+//Déclaration des fonctions d'écriture et de lecture sur la carte SD
+void datawrite();
+void dataread();

@@ -59,16 +59,16 @@ void initialisation()
 
     pinMode(redButtonPort, INPUT);
     pinMode(greenButtonPort, INPUT);
-    pinMode(A1, INPUT);                 //Initialisation du capteur de luminosité
+    pinMode(A1, INPUT);                                         //Initialisation du capteur de luminosité
 
     analogWrite(A1, LOW);
 
     //Configuration de l'horloge
     clock.begin();
-    clock.fillByYMD(2021, 10, 22);            // On initialise le jour de départ de la clock
-    clock.fillByHMS(14,31,00);              // On initialise l'heure de départ
-    clock.fillDayOfWeek(SUN);               //On entre le nom du jour de départ
-    clock.setTime();                  //Ecriture de la date sur l'horloge RTC
+    clock.fillByYMD(2021, 10, 22);                              // On initialise le jour de départ de la clock
+    clock.fillByHMS(14,31,00);                                  // On initialise l'heure de départ
+    clock.fillDayOfWeek(SUN);                                   //On entre le nom du jour de départ
+    clock.setTime();                                            //Ecriture de la date sur l'horloge RTC
 
     //Configuration du capteur
     capteur.settings.commInterface = I2C_MODE; 
@@ -97,55 +97,64 @@ void initialisation()
 
 void getData()
 {   
-    String *dateString;
-    String *dataString;
+    //Création de deux pointeurs
+    String *dateString;                                         //Ce pointeur va permettre de stocker la date du prélevement des datas
+    String *dataString;                                         //Ce pointeur va permettre de stocker les datas
 
     clock.getTime();
-    *dateString = String(clock.dayOfMonth, DEC);
+    *dateString = String(clock.dayOfMonth, DEC);                //On récupère le jour
     *dateString += "/";
-    *dateString += String(clock.month, DEC);
+    *dateString += String(clock.month, DEC);                    //On récupère le mois
     *dateString += "/";
-    *dateString += String(clock.year + 2000, DEC);
+    *dateString += String(clock.year + 2000, DEC);              //On récupère l'année auquelle on ajoute 2000
     *dateString += " ";
-    *dateString += String(clock.hour, DEC);
+    *dateString += String(clock.hour, DEC);                     //On récupère l'heure
     *dateString += ":";
-    *dateString += String(clock.minute, DEC);
+    *dateString += String(clock.minute, DEC);                   //On récupère la minute
     *dateString += ":";
-    *dateString += String(clock.year + 2000, DEC);
+    *dateString += String(clock.second, DEC);                   //On récupère la seconde
     *dateString += " -> ";
 
     
 
     //Récupération de la luminosité
     //On récupère les données brutes du capteurs
-
     int temperature = (float)analogRead(A0);
+
     //On traite les données ici
     temperature = (temperature/10)^10;
     dataTable[0] = temperature;
 
+    //On stockes nos données de façon à ce qu'elles soient prêtes à être écrite dans le fichier de sauvegarde
     *dataString = "Luminosité : ";
     *dataString += String(dataTable[0], DEC);
     *dataString += " lux | ";
 
     //Récupération de la température de l'air en °C
     dataTable[1] = capteur.readTempC();
+
+    //On stockes nos données de façon à ce qu'elles soient prêtes à être écrite dans le fichier de sauvegarde
     *dataString += "Température : ";
     *dataString += String(dataTable[1], DEC);
     *dataString += "°C | ";
 
     //Récupération de la pression atmosphérique en Pascals
     dataTable[2] = capteur.readFloatPressure();
+
+    //On stockes nos données de façon à ce qu'elles soient prêtes à être écrite dans le fichier de sauvegarde
     *dataString += "Pression : ";
     *dataString += String(dataTable[2], DEC);
     *dataString += "Pa | ";
 
     //Récupération de l'humidité en %
     dataTable[3] = capteur.readFloatHumidity();
+
+    //On stockes nos données de façon à ce qu'elles soient prêtes à être écrite dans le fichier de sauvegarde
     *dataString += "Humidité : ";
     *dataString += String(dataTable[3], DEC);
     *dataString += "%.\n";
 
+    //Ouverture du fichier de sauvegarde
     carteSD = (SD.open("data.txt", FILE_WRITE));
 
     if (carteSD)
@@ -153,32 +162,41 @@ void getData()
         Serial.println(F("Enregistrement des données ! Fichier ouvert !"));
 
         carteSD.print(*dateString);
+
+        //Vérification d'une donnée non nulle provenant du capteur
         if (dataTable[0] != NULL)
         {
+            //Ecriture dans le fichier de sauvegarde
             Serial.println(F("Ecriture de la luminosité !"));
             carteSD.print("Luminosité : ");
             carteSD.print(String(dataTable[0], DEC));
             carteSD.print(" lux | ");
         }
 
+        //Vérification d'une donnée non nulle provenant du capteur
         if (dataTable[1] != NULL)
         {
+            //Ecriture dans le fichier de sauvegarde
             Serial.println(F("Ecriture de la température !"));
             carteSD.print("Température : ");
             carteSD.print(String(dataTable[1], DEC));
             carteSD.print("°C | ");
         }
 
+        //Vérification d'une donnée non nulle provenant du capteur
         if (dataTable[2] != NULL)
         {
+            //Ecriture dans le fichier de sauvegarde
             Serial.println(F("Ecriture de la pression !"));
             carteSD.print("Pression : ");
             carteSD.print(String(dataTable[2], DEC));
             carteSD.print("Pa | ");
         }
 
+        //Vérification d'une donnée non nulle provenant du capteur
         if (dataTable[3] != NULL)
         {
+            //Ecriture dans le fichier de sauvegarde
             Serial.println(F("Ecriture de l'humidité !"));
             carteSD.print("Humidité : ");
             carteSD.print(String(dataTable[3], DEC));
@@ -271,9 +289,9 @@ void modeStandard()
     //Allumage de la LED verte
     leds.setColorRGB(0, 0, 255, 0);
 
-    checkGetData = true;
+    checkGetData = true;                                        //On permet l'acquisition des données
 
-    LOG_INTERVAL = 600000;
+    LOG_INTERVAL = 600000;                                      //On met l'intervalle à 10min
 }
 
 //****************************************************************
@@ -288,7 +306,7 @@ void modeMaintenance()
     //Allumage de la LED orange
     leds.setColorRGB(0, 255, 75, 0);
 
-    checkGetData = false;
+    checkGetData = false;                                       //On ne permet pas l'acquisition des données
 }
 
 //****************************************************************
@@ -303,9 +321,9 @@ void modeEconomique()
     //Allumage de la LED bleue
     leds.setColorRGB(0, 0, 170, 255);
 
-    checkGetData = true;
+    checkGetData = true;                                        //On permet l'acquisition des données
 
-    LOG_INTERVAL = LOG_INTERVAL * 2;
+    LOG_INTERVAL = LOG_INTERVAL * 2;                            //On met l'intervalle à 20min
 }
 
 //****************************************************************
@@ -320,14 +338,14 @@ void modeConfiguration()
     //Allumage de la LED jaune
     leds.setColorRGB(0, 255, 255, 0);
 
-    checkGetData = false;
-    modificationParametre();
+    checkGetData = false;                                       //On ne permet pas l'acquisition des données
+    modificationParametre();                                    //On fait appel à la fonction de modification de paramètres
 
     if (millis() >= 1800000)
     {
-        mode = 1;
-        lastMode = 3;
-        modeStandard();
+        mode = 1;                                               //Passage du mode à 1, pour le mode standard
+        lastMode = 3;                                           //On indique que le dernier mode utilisé était le mode 3 (le mode configuration)
+        modeStandard();                                         //Au bout d'une demi heure d'inactivitée on retourne en mode standard
     }
 }
 
@@ -348,36 +366,37 @@ void modificationParametre()
     Serial.println(F(""));
     Serial.println(F("Veuillez choisir la modification à effectuer : "));
 
-    bool checkDataInput = false;
+    bool checkDataInput = false;                                //On dit que la variable de vérification de donnée pour choisir la modification est à false
 
     while (checkDataInput == false)
     {
-        valeurModification = Serial.read();
+        valeurModification = Serial.read();                     //On attend que l'utilisateur rentre la modification
     }
 
-    if (valeurModification < 1 || valeurModification > 4)
+    if (valeurModification < 1 || valeurModification > 4)       //Si le choix rentré n'existe pas on met une erreure pour que l'utilisateur réctifie son entrée
     {
         Serial.println(F("Ce choix n'existe pas !"));
-        valeurModification = Serial.read();
+        valeurModification = Serial.read();                     //On attend que l'utilisateur rentre la modification
     }
 
     switch (valeurModification)
     {
         case 1 :
             Serial.println(F("Veuillez mettre le nouveau temps entre deux mesures (en minutes) : "));
-            LOG_INTERVAL =  Serial.read();
-            LOG_INTERVAL *= 60000;
+            LOG_INTERVAL = Serial.read();
+            LOG_INTERVAL = LOG_INTERVAL * 60000;
             break;
         case 2 :
             Serial.println(F("Veuillez mettre la nouvelle taille de fichier : "));
-            FILE_MAX_SIZE =  Serial.read();
+            FILE_MAX_SIZE = Serial.read();
             break;
         case 3 :
+            Serial.print(F("Restauration des paramètres par défaut..."))
             LOG_INTERVAL = 600000;
-            FILE_MAX_SIZE;
+            FILE_MAX_SIZE = 4096;
             break;
         case 4:
-            Serial.println(F("Version du programme : "));
+            Serial.println(F("Version du programme : 1.0"));
             break;
     }
 }

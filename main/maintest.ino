@@ -23,6 +23,8 @@ bool checkGetData = false;
 unsigned long currentMillis;
 unsigned long previousMillis = 0;
 
+float dataTable[4];
+
 BME280 capteur;
 
 ChainableLED leds(7 ,8, 1);
@@ -95,40 +97,54 @@ void initialisation()
 
 void getData()
 {   
-    String dateString;
-    String dataString;
+    String *dateString;
+    String *dataString;
 
     clock.getTime();
-    dateString += String(clock.dayOfMonth, DEC);
-    dateString += "/";
-    dateString += String(clock.month, DEC);
-    dateString += "/";
-    dateString += String(clock.year + 2000, DEC);
-    dateString += " ";
-    dateString += String(clock.hour, DEC);
-    dateString += ":";
-    dateString += String(clock.minute, DEC);
-    dateString += ":";
-    dateString += String(clock.year + 2000, DEC);
-    dateString += " -> ";
+    *dateString = String(clock.dayOfMonth, DEC);
+    *dateString += "/";
+    *dateString += String(clock.month, DEC);
+    *dateString += "/";
+    *dateString += String(clock.year + 2000, DEC);
+    *dateString += " ";
+    *dateString += String(clock.hour, DEC);
+    *dateString += ":";
+    *dateString += String(clock.minute, DEC);
+    *dateString += ":";
+    *dateString += String(clock.year + 2000, DEC);
+    *dateString += " -> ";
 
     
 
     //Récupération de la luminosité
     //On récupère les données brutes du capteurs
 
-    int luminosite = analogRead(A0);
+    int temperature = (float)analogRead(A0);
     //On traite les données ici
-    luminosite =  (luminosite/10)^10;
+    temperature = (temperature/10)^10;
+    dataTable[0] = temperature;
+
+    *dataString = "Luminosité : ";
+    *dataString += String(dataTable[0], DEC);
+    *dataString += " lux | ";
 
     //Récupération de la température de l'air en °C
-    float temperature = capteur.readTempC();
+    dataTable[1] = capteur.readTempC();
+    *dataString += "Température : ";
+    *dataString += String(dataTable[1], DEC);
+    *dataString += "°C | ";
 
     //Récupération de la pression atmosphérique en Pascals
-    float pression = capteur.readFloatPressure();
+    dataTable[2] = capteur.readFloatPressure();
+    *dataString += "Pression : ";
+    *dataString += String(dataTable[2], DEC);
+    *dataString += "Pa | ";
 
     //Récupération de l'humidité en %
-    float humidite = capteur.readFloatHumidity();
+    dataTable[3] = capteur.readFloatHumidity();
+    *dataString += "Humidité : ";
+    *dataString += String(dataTable[3], DEC);
+    *dataString += "%.\n";
 
     carteSD = (SD.open("data.txt", FILE_WRITE));
 
@@ -136,36 +152,36 @@ void getData()
     {
         Serial.println(F("Enregistrement des données ! Fichier ouvert !"));
 
-        carteSD.print(dateString);
-        if (luminosite != NULL)
+        carteSD.print(*dateString);
+        if (dataTable[0] != NULL)
         {
             Serial.println(F("Ecriture de la luminosité !"));
             carteSD.print("Luminosité : ");
-            carteSD.print(luminosite);
+            carteSD.print(String(dataTable[0], DEC));
             carteSD.print(" lux | ");
         }
 
-        if (temperature != NULL)
+        if (dataTable[1] != NULL)
         {
             Serial.println(F("Ecriture de la température !"));
             carteSD.print("Température : ");
-            carteSD.print(temperature);
+            carteSD.print(String(dataTable[1], DEC));
             carteSD.print("°C | ");
         }
 
-        if (pression != NULL)
+        if (dataTable[2] != NULL)
         {
             Serial.println(F("Ecriture de la pression !"));
             carteSD.print("Pression : ");
-            carteSD.print(pression);
+            carteSD.print(String(dataTable[2], DEC));
             carteSD.print("Pa | ");
         }
 
-        if (humidite != NULL)
+        if (dataTable[3] != NULL)
         {
             Serial.println(F("Ecriture de l'humidité !"));
             carteSD.print("Humidité : ");
-            carteSD.print(humidite);
+            carteSD.print(String(dataTable[3], DEC));
             carteSD.print("%.\n");
         }
 
@@ -174,15 +190,14 @@ void getData()
     else 
         Serial.println(F("Erreur !!! Aucune écriture possible sur la carte SD !"));
 
-    dateString += dataString;
+    *dateString += *dataString;
 
-    Serial.println(dateString);
+    Serial.println(*dateString);
 
-    dateString = "";
-    dataString = "";
+    *dateString = " ";
+    *dataString = " ";
 
-
-    delay(1000);
+    delay(LOG_INTERVAL);
 }
 
 //****************************************************************

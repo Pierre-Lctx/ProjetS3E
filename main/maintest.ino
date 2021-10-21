@@ -379,23 +379,23 @@ void modificationParametre()
         valeurModification = Serial.read();                     //On attend que l'utilisateur rentre la modification
     }
 
-    switch (valeurModification)
+    switch (valeurModification)																
     {
-        case 1 :
+        case 1 :																							//Si valeurModification = 1
             Serial.println(F("Veuillez mettre le nouveau temps entre deux mesures (en minutes) : "));
             LOG_INTERVAL = Serial.read();
-            LOG_INTERVAL = LOG_INTERVAL * 60000;
+            LOG_INTERVAL = LOG_INTERVAL * 60000;															//On remet le temps saisi par l'utilisateur (en minute) en millisecondes
             break;
-        case 2 :
+        case 2 :																							//Si valeurModification = 2
             Serial.println(F("Veuillez mettre la nouvelle taille de fichier : "));
             FILE_MAX_SIZE = Serial.read();
             break;
-        case 3 :
+        case 3 :																							//Si valeurModification = 3
             Serial.print(F("Restauration des paramètres par défaut..."))
             LOG_INTERVAL = 600000;
             FILE_MAX_SIZE = 4096;
             break;
-        case 4:
+        case 4:																								//Si valeurModification = 4
             Serial.println(F("Version du programme : 1.0"));
             break;
     }
@@ -514,7 +514,7 @@ void setup()
     initialisation();
 }
 
-void loop()
+void loop()     				
 {
     while (checkGetData)
     {

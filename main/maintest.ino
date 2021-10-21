@@ -29,6 +29,8 @@ const int redButtonPort = 2;
 
     DS1307 clock;
 
+    File carteSD;
+
 
 void initialisation()
 {
@@ -49,16 +51,16 @@ void initialisation()
 
     pinMode(redButtonPort, INPUT);
     pinMode(greenButtonPort, INPUT);
-    pinMode(A1, INPUT); 								//Initialisation du capteur de luminosité
+    pinMode(A1, INPUT);                 //Initialisation du capteur de luminosité
 
     analogWrite(A1, LOW);
 
     //Configuration de l'horloge
     clock.begin();
-    clock.fillByYMD(2021, 10, 22); 						// On initialise le jour de départ de la clock
-    clock.fillByHMS(14,31,00); 							// On initialise l'heure de départ
-    clock.fillDayOfWeek(SUN); 							//On entre le nom du jour de départ
-    clock.setTime(); 									//Ecriture de la date sur l'horloge RTC
+    clock.fillByYMD(2021, 10, 22);            // On initialise le jour de départ de la clock
+    clock.fillByHMS(14,31,00);              // On initialise l'heure de départ
+    clock.fillDayOfWeek(SUN);               //On entre le nom du jour de départ
+    clock.setTime();                  //Ecriture de la date sur l'horloge RTC
 
     //Configuration du capteur
     capteur.settings.commInterface = I2C_MODE; 
@@ -97,17 +99,16 @@ void getData()
     dateString += String(clock.year + 2000, DEC);
     dateString += " -> ";
 
-    Serial.print(dateString);
+    
 
     //Récupération de la luminosité
     //On récupère les données brutes du capteurs
 
-    float luminosite = analogRead(A0);
+    int luminosite = analogRead(A0);
     //On traite les données ici
     luminosite =  (luminosite/10)^10;
 
-    Serial.print(luminosite);
-    Serial.print(" lux | ");
+ 
 
     //Récupération de la température de l'air en °C
     float temperature = capteur.readTempC();
@@ -127,25 +128,16 @@ void getData()
     dataString += String(temperature, DEC);
     dataString += "° %.";
 
-    Serial.print("Température : ");
-    Serial.print(temperature);
-    Serial.print("°C | ");
-    Serial.print("Pression : ");
-    Serial.print(pression);
-    Serial.print(" Pa | ");
-    Serial.print("Humidité : ");
-    Serial.print(humidite);
-    Serial.println(" %.");
 
     carteSD = (SD.open("data.txt", FILE_WRITE));
 
     if (carteSD)
     {
         Serial.println("Enregistrement des données ! Fichier ouvert !");
-        if (light != NULL)
+        if (luminosite != NULL)
         {
-            carteSD.print("Luminosité : ")
-            carteSD.print(light);
+            carteSD.print("Luminosité : ");
+            carteSD.print(luminosite);
             carteSD.print(" lux | ");
         }
 
@@ -341,7 +333,7 @@ int selectionMode(bool redButtonValue, bool greenButtonValue)
                 mode = 1;
                 lastMode = 2;
                 modeStandard();
-                Serial.println("Mode standard !");
+                
                 return 0;
             }
             if (lastMode == 3)
@@ -349,7 +341,7 @@ int selectionMode(bool redButtonValue, bool greenButtonValue)
                 mode = 3;
                 lastMode = 2;
                 modeEconomique();
-                Serial.println("Mode économique !");
+                
                 return 0;
             }
         }
@@ -359,7 +351,7 @@ int selectionMode(bool redButtonValue, bool greenButtonValue)
         {
             mode = 2;
             modeMaintenance();
-            Serial.println("Mode maintenance !");
+            
             return 0;
         }
     }
@@ -368,13 +360,13 @@ int selectionMode(bool redButtonValue, bool greenButtonValue)
     {
         Serial.println("Green button pressed !");
         Serial.print("Mode = ");
-        Serial.print(mode);
+        
         //Si nous venons d'activer le dispositif et que nous appuyons sur le bouton vert, nous passons en mode standard
         if (mode == 0)
         {
             mode = 1;
             modeStandard();
-            Serial.println("Mode standard !");
+            
             return 0;
         }
 
@@ -384,7 +376,7 @@ int selectionMode(bool redButtonValue, bool greenButtonValue)
             mode = 3;
             lastMode = 1;
             modeEconomique();
-            Serial.println("Mode économique !");
+            
             return 0;
         }
 
@@ -394,7 +386,7 @@ int selectionMode(bool redButtonValue, bool greenButtonValue)
             mode = 1;
             lastMode = 3;
             modeStandard();
-            Serial.println("Mode standard !");
+           
             return 0;
         }
     }
@@ -418,10 +410,7 @@ void loop()
     while (checkGetData)
     {
         getData();
-        delay(1000);
-        datawrite();
-        delay(1000);
-        dataread();
+        
     }
 }
 

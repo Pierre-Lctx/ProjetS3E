@@ -22,6 +22,18 @@
 void initialisation()
 {
     Serial.begin(9600);
+    while (!Serial) {
+    ; // Attendre que le port série se connecte. Nécessaire pour le port USB natif uniquement
+    }
+
+
+    Serial.print("Initialisation avec la carte SD...");
+
+    if (!SD.begin(4)) {
+        Serial.println("Initialisation échoué!");
+        while (1);
+    }
+    Serial.println("Initialisation réussi");
 
     const int redButtonPort = 2;
     const int greenButtonPort = 3;

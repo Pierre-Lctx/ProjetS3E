@@ -17,7 +17,7 @@
 //****************************************************************
 
 
-const int redButtonPort = 2;
+    const int redButtonPort = 2;
     const int greenButtonPort = 3;
 
     int mode = 0;

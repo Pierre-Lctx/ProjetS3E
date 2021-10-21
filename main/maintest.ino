@@ -7,29 +7,29 @@
 #include <SparkFunBME280.h>
 
 const int redButtonPort = 2;
-    const int greenButtonPort = 3;
+const int greenButtonPort = 3;
 
-    int mode = 0;
-    int lastMode = 0;
+int mode = 0;
+int lastMode = 0;
 
-    int valeurModification;
+int valeurModification;
 
-    int FILE_MAX_SIZE = 4096;
+int FILE_MAX_SIZE = 4096;
 
-    long LOG_INTERVAL = 500;
+long LOG_INTERVAL = 500;
 
-    bool checkGetData = false;
+bool checkGetData = false;
 
-    unsigned long currentMillis;
-    unsigned long previousMillis = 0;
+unsigned long currentMillis;
+unsigned long previousMillis = 0;
 
-    BME280 capteur;
+BME280 capteur;
 
-    ChainableLED leds(7 ,8, 1);
+ChainableLED leds(7 ,8, 1);
 
-    DS1307 clock;
+DS1307 clock;
 
-    File carteSD;
+File carteSD;
 
 
 void initialisation()
@@ -128,12 +128,14 @@ void getData()
     dataString += String(temperature, DEC);
     dataString += "° %.";
 
+    Serial.println(F(dateString));
+
 
     carteSD = (SD.open("data.txt", FILE_WRITE));
 
     if (carteSD)
     {
-        Serial.println("Enregistrement des données ! Fichier ouvert !");
+        Serial.println(F("Enregistrement des données ! Fichier ouvert !"));
         if (luminosite != NULL)
         {
             carteSD.print("Luminosité : ");
@@ -170,7 +172,7 @@ void interruptionRed()
 {
     if (digitalRead(redButtonPort))
     {
-        Serial.println("Red interruption !");
+        Serial.println(F("Red interruption !"));
         currentMillis = millis();
 
         if ((unsigned long)(currentMillis - previousMillis) >= 5000)
@@ -193,7 +195,7 @@ void interruptionGreen()
 {
     if (digitalRead(greenButtonPort))
     {
-        Serial.println("Green interruption !");
+        Serial.println(F("Green interruption !"));
         currentMillis = millis();
 
         if ((unsigned long)(currentMillis - previousMillis) >= 5000)
@@ -254,31 +256,31 @@ void modeConfiguration()
 }
 void modificationParametre()
 {
-    Serial.println("Interface de modification des paramètres : ");
-    Serial.println("1 - Temps d'intervalle entre deux mesure mode standard.");
-    Serial.println("2 - Changer la taille maximale d'un fichier.");
-    Serial.println("3 - Réinitialiser l'ensemble des paramètres en valeur par défaut.");
-    Serial.println("4 - Affichage de la version du programme.");
-    Serial.println("");
-    Serial.println("Veuillez choisir la modification à effectuer : ");
+    Serial.println(F("Interface de modification des paramètres : "));
+    Serial.println(F("1 - Temps d'intervalle entre deux mesure mode standard."));
+    Serial.println(F("2 - Changer la taille maximale d'un fichier."));
+    Serial.println(F("3 - Réinitialiser l'ensemble des paramètres en valeur par défaut."));
+    Serial.println(F("4 - Affichage de la version du programme."));
+    Serial.println(F(""));
+    Serial.println(F("Veuillez choisir la modification à effectuer : "));
 
     valeurModification = Serial.read();
 
     while (valeurModification < 1 || valeurModification > 4)
     {
-        Serial.println("Ce choix n'existe pas !");
+        Serial.println(F("Ce choix n'existe pas !"));
         valeurModification = Serial.read();
     }
 
     switch (valeurModification)
     {
         case 1 :
-            Serial.println("Veuillez mettre le nouveau temps entre deux mesures (en minutes) : ");
+            Serial.println(F("Veuillez mettre le nouveau temps entre deux mesures (en minutes) : "));
             LOG_INTERVAL =  Serial.read();
             LOG_INTERVAL *= 60000;
             break;
         case 2 :
-            Serial.println("Veuillez mettre la nouvelle taille de fichier : ");
+            Serial.println(F("Veuillez mettre la nouvelle taille de fichier : "));
             FILE_MAX_SIZE =  Serial.read();
             break;
         case 3 :
@@ -286,7 +288,7 @@ void modificationParametre()
             FILE_MAX_SIZE;
             break;
         case 4:
-            Serial.println("Version du programme : ");
+            Serial.println(F("Version du programme : "));
             break;
     }
 }
@@ -300,16 +302,16 @@ void modificationParametre()
 
 int selectionMode(bool redButtonValue, bool greenButtonValue)
 {
-    Serial.println("Selection en cours !");
+    Serial.println(F("Selection en cours !"));
     if (redButtonValue)
     {
-        Serial.println("Red button pressed !");
+        Serial.println(F("Red button pressed !"));
         //Si nous venons d'activer le dispositif et que nous appuyons sur le bouton rouge, nous passons en mode configuration
         if (mode == 0)
         {
             mode = 4;
             modeConfiguration();
-            Serial.println("Mode configuration !");
+            Serial.println(F("Mode configuration !"));
             return 0;
         }
 
@@ -319,7 +321,7 @@ int selectionMode(bool redButtonValue, bool greenButtonValue)
             mode = 2;
             lastMode = 1;
             modeMaintenance();
-            Serial.println("Mode maintenance !");
+            Serial.println(F("Mode maintenance !"));
             return 0;
         }
 
@@ -358,9 +360,8 @@ int selectionMode(bool redButtonValue, bool greenButtonValue)
 
     if (greenButtonValue)
     {
-        Serial.println("Green button pressed !");
-        Serial.print("Mode = ");
-        
+        Serial.println(F("Green button pressed !"));
+
         //Si nous venons d'activer le dispositif et que nous appuyons sur le bouton vert, nous passons en mode standard
         if (mode == 0)
         {
@@ -413,4 +414,3 @@ void loop()
         
     }
 }
-

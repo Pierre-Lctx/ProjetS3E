@@ -109,6 +109,10 @@ void getData()
             carteSD.print("%.");
         }
     }
+    else 
+    {
+        Serial.println("Impossible de trouver la carte SD...");
+    }
 
     delay(LOG_INTERVAL);
 }

@@ -80,6 +80,7 @@ void getData()
 
     if (carteSD)
     {
+        Serial.println("Enregistrement des données ! Fichier ouvert !");
         if (light != NULL)
         {
             carteSD.print("Luminosité : ")
